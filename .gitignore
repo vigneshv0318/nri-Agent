@@ -26,20 +26,40 @@ venv/
 .venv/
 env/
 
-# Environment Variables
+# Environment Variables & Secrets
 .env
 .env.local
 .env.*
+!.env.example
 
-# IDEs
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / Frontend
+node_modules/
+dist/
+frontend/dist/
+frontend/node_modules/
+.pnp
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs & System
 .vscode/
 .idea/
 *.swp
+.DS_Store
+Thumbs.db
 
-# Project Specific
+# Project Temporary Files
 *.mp4
 *.png
 *.jpg
+*.jpeg
 *.wav
 temp/
 brain/

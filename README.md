@@ -1,239 +1,258 @@
-# 🚀 AI-Native Language Tutor(Ammachi-AI)
+# 👵 Ammachi – AI-Powered Native Language Learning Platform for NRI Children
 
 <div align="center">
 
-![AI-Native Language Tutor Logo](abi.jpeg) <!-- The image `abi.jpeg` is assumed to be a logo or relevant visual for the project. -->
+![Ammachi Logo](frontend/public/pwa-192x192.png)
 
-[![GitHub stars](https://img.shields.io/github/stars/Abishek0070/AI-Native-Language-Tutor?style=for-the-badge)](https://github.com/Abishek0070/AI-Native-Language-Tutor/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Abishek0070/AI-Native-Language-Tutor?style=for-the-badge)](https://github.com/Abishek0070/AI-Native-Language-Tutor/network)
-[![GitHub issues](https://img.shields.io/github/issues/Abishek0070/AI-Native-Language-Tutor?style=for-the-badge)](https://github.com/Abishek0070/AI-Native-Language-Tutor/issues)
-[![GitHub license](https://img.shields.io/github/license/Abishek0070/AI-Native-Language-Tutor?style=for-the-badge)](LICENSE) <!-- TODO: Add actual license file (e.g., LICENSE.md) -->
+**Your Personal AI Native Language Companion & Cultural Storyteller**
 
-**Your personal AI language companion for native-like fluency.**
-
-[Live Demo](https://demo-link.com) <!-- TODO: Add live demo link if available --> |
-[Documentation](https://docs-link.com) <!-- TODO: Add documentation link if available -->
+[![PWA Ready](https://img.shields.io/badge/PWA-Installable-orange?style=for-the-badge&logo=pwa)](https://web.dev/progressive-web-apps/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![React 18](https://img.shields.io/badge/React-Vite%20PWA-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Psycopg3-336791?style=for-the-badge&logo=postgresql)](https://www.postgresql.org)
+[![PaddleOCR](https://img.shields.io/badge/PaddleOCR-PP--OCRv5-FF6F00?style=for-the-badge)](https://github.com/PaddlePaddle/PaddleOCR)
+[![Gemini AI](https://img.shields.io/badge/Google%20Gemini-Multimodal-4285F4?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
 
 </div>
-
-## 📖 Overview
-
-The AI-Native Language Tutor is an innovative application designed to provide a highly personalized and interactive language learning experience. Leveraging the power of artificial intelligence, this platform aims to simulate native-speaker interactions, offering real-time feedback, adaptive exercises, and conversational practice to accelerate language acquisition and achieve fluency. It's built as a web application with a robust Python backend at its core, enabling sophisticated AI functionalities.
-
-## ✨ Features
-
--   🎯 **AI-Powered Conversational Practice**: Engage in dynamic, free-form conversations with an intelligent AI tutor.
--   🧠 **Personalized Learning Paths**: Adaptive curriculum that adjusts to your learning pace and proficiency.
--   🗣️ **Real-time Feedback & Correction**: Get immediate insights on grammar, vocabulary, and pronunciation.
--   📝 **Interactive Language Exercises**: Practice speaking, listening, reading, and writing through diverse activities.
--   📈 **Progress Tracking**: Monitor your learning journey and identify areas for improvement.
--   🌐 **Multi-Language Support**: Designed to support learning various languages.
-
-
-
-## 🛠️ Tech Stack
-```
-LangChain 
-LangGraph agent orchestration
-LLM Brain,Groq llama ,Multimodal reasoning
-Vision(Local),Qwen2-VL 
-Deepgram
-ElevenLabs-Emotive “Grandmother” voice
-SQLite-Local-first user profiles & mastery Knowledge
-FAISS + YouTube API,Cultural RAG & storytelling
-MCP Tool - Youtube
-Reddis(caching)
-```
-
-**Backend:**
--   **Runtime**: Python
--   **AI/ML**: Large Language Models (LLMs) integration (e.g., Groq, Hugging Face via libraries like `transformers`, `langchain`)
--   **Web Framework**: <!-- TODO: Detect specific Python web framework (e.g., Flask, FastAPI, Django) from `backend` directory content. -->
-
-**Frontend:**
--   **User Interface**: Streamlit<!-- TODO: Add frontend technologies and badges once detected. -->
-
-🌟 Reward & Progress Tracking
-
-Ammachi doesn't just grade; she mentors. Our Mastery Tracker uses a unique 3-tier system:
-1. The Cultural Passport (SQLite Storage)
-
-Every child has a user_profile stored locally. As they complete modules, they earn Cultural Stamps (NFT-style digital badges) for festivals like Diwali, Pongal, or Onam.
-
-    Table: achievements (user_id, stamp_id, date_unlocked, mastery_score).
-
-2. Level-Up Scaffolding
-
-The system tracks a rolling average of the last 5 interactions.
-
-    Score > 80%: Prompts Ammachi to level up the language difficulty (e.g., from Tanglish to Bilingual).
-
-    Score < 50%: Triggers "Gentle Remediation" mode where the AI simplifies vocabulary.
-
-3. The "Story Unlock" Reward
-
-When a child completes a handwriting task (e.g., writing "அம்மா"), the Cultural Discovery Agent triggers the YouTube Data API to play a related animated folklore story.
-
-🚀 Key Modules
-✍️ Handwriting Tutor
-
-Unlike traditional OCR, we analyze the process. By tracking the hand movement via MediaPipe, we detect if a child draws a letter in the correct stroke order. If they start from the bottom instead of the top, Ammachi intervenes: "Kanna, start from the top like a little mountain!"
-🗣️ Inclusive Voice Agent
-
-Standard AI cuts off slow speakers. Our Adaptive Endpointing increases the silence timeout to 3 seconds, providing a safe space for children with stutters or language anxiety to finish their thoughts.
-🎡 Cultural RAG
-
-We use FAISS to store local metadata about festivals. When a child asks about a festival, the agent retrieves the facts and presents a "Knowledge Challenge" to earn the next stamp.
-
-## 🚀 Quick Start
-
-Follow these steps to set up and run the AI-Native Language Tutor locally.
-
-### Prerequisites
--   **Python** (version 3.8 or higher recommended)
--   **Git** (for cloning the repository)
--   An **API Key** for your chosen Large Language Model provider (e.g., OpenAI API Key).
-
-### Installation
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/Abishek0070/AI-Native-Language-Tutor.git
-    cd AI-Native-Language-Tutor
-    ```
-
-2.  **Navigate to the backend and install dependencies**
-    ```bash
-    cd backend
-    pip install -r requirements.txt
-    ```
-    <!-- TODO: Confirm `requirements.txt` path and existence within `backend`. -->
-
-3.  **Environment setup**
-    Create a `.env` file in the `backend` directory based on `.env.example` (if available).
-    ```bash
-    cp .env.example .env # If .env.example exists, otherwise create .env manually
-    ```
-    Configure your environment variables, especially the API key for the AI service:
-    ```ini
-    # .env
-    GROQ_API_KEY="your_api_key_here"
-    DEEPGRAM_API_KEY="your_api_key_here"
-    ELEVENLABS_API_KEY="your_api_key_here"
-    # Add other environment variables as needed (e.g., for different LLMs, database connections)
-    ```
-    <!-- TODO: List actual detected environment variables from `.env.example` or code. -->
-
-4.  **Start development server**
-    ```bash
-    # From the 'backend' directory
-    python main.py
-    # OR if using FastAPI/Uvicorn:
-    # uvicorn main:app --reload --port 8000
-    ```
-    <!-- TODO: Detect actual entry point file (e.g., `main.py`, `app.py`) and specific start command. -->
-
-5.  **Open your browser**
-    Visit `http://localhost:[detected-port]` (e.g., `http://localhost:8000` for the backend API). If a frontend exists, it would typically run on a different port (e.g., `http://localhost:3000`).
-
-## 📁 Project Structure
-
-```
-AI-Native-Language-Tutor/
-├── .gitignore                # Specifies intentionally untracked files to ignore
-├── README.md                 # Project README file
-├── abi.jpeg                  # An image file, possibly a project logo or asset
-├── ammachi/                  # (Empty directory, purpose currently unknown)
-└── backend/                  # Contains the Python backend application code
-    ├── requirements.txt      # (Assumed) Lists Python project dependencies
-    ├── main.py               # (Assumed) Main application entry point for the backend
-    └── [other-backend-files] # Configuration, routes, utility functions, AI models, etc.
-```
-<!-- TODO: Refine `backend` subdirectory structure once more details are available. -->
-
-## ⚙️ Configuration
-
-### Environment Variables
-Key environment variables are used to configure the application, especially for integrating with external AI services.
-
-| Variable        | Description                                       | Default     | Required |
-|-----------------|---------------------------------------------------|-------------|----------|
-| `GROQ_API_KEY`| Your API key for accessing the OpenAI service.    | `None`      | Yes      |
-| `PORT`          | The port on which the backend server will run.    | `8000`      | No       |
-| `DEBUG`         | Enable debug mode for the backend.                | `False`     | No       |
-<!-- TODO: Add actual detected environment variables from `.env.example` or code. -->
-
-### Configuration Files
-<!-- TODO: List detected specific configuration files within the `backend` directory (e.g., `config.py`, `settings.py`) and their purposes. -->
-
-## 🔧 Development
-
-### Available Scripts
-To run the backend development server:
-```bash
-cd backend
-python main.py # Or the specific command to start your backend framework
-```
-<!-- TODO: List actual detected development scripts from `package.json` (if JS) or specific Python run commands. -->
-
-### Development Workflow
-Contributions and development typically involve modifying files within the `backend/` directory, updating `requirements.txt` for new dependencies, and restarting the server to see changes.
-
-## 🧪 Testing
-
-<!-- TODO: If testing framework (e.g., `pytest`) and tests are detected, add relevant commands and instructions. -->
-Currently, no explicit testing framework or test commands are detected in the provided structure.
-
-## 🚀 Deployment
-
-### Production Build
-For deploying the Python backend:
-```bash
-# Ensure all dependencies are installed
-cd backend
-pip install -r requirements.txt
-
-# Start the application using a production-ready WSGI server like Gunicorn or Uvicorn
-# gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:8000
-```
-<!-- TODO: Provide specific deployment commands/instructions based on detected framework. -->
-
-### Deployment Options
-This application can be deployed on various cloud platforms that support Python applications, such as Heroku, AWS EC2, Google Cloud Run, or by containerizing it with Docker.
-
-## 📚 API Reference
-
-The backend exposes a set of RESTful APIs to power the language tutor application.
-
-### Authentication
-<!-- TODO: If an authentication system is implemented, describe it here (e.g., JWT, API Key). -->
-
-### Endpoints
-<!-- TODO: List and describe key API endpoints based on route analysis from backend code. Example: -->
--   `POST /chat/message`: Send a message to the AI tutor and receive a response.
-    -   **Request Body**: `{ "user_message": "Hello, how are you?", "language": "en" }`
-    -   **Response**: `{ "tutor_response": "I'm doing great, thanks for asking!" }`
--   `GET /progress`: Retrieve user learning progress.
--   `POST /exercise/submit`: Submit an exercise for evaluation.
-
-
-
-### Development Setup for Contributors
-Ensure you have Python 3.8+ and pip installed. Clone the repository, navigate to the `backend` directory, and install dependencies as described in the [Installation](#installation) section.
-
-
-## 📞 Support & Contact
-
--   📧 Email: [abishekbalamurugan858@gmail.com] <!-- TODO: Add a contact email address -->
--   🐛 Issues: [GitHub Issues](https://github.com/Abishek0070/AI-Native-Language-Tutor/issues)
--   💬 Discussions: [GitHub Discussions](https://github.com/Abishek0070/AI-Native-Language-Tutor/discussions) <!-- TODO: Enable GitHub Discussions if desired -->
 
 ---
 
-<div align="center">
+## 📖 Overview
 
-**⭐ Star this repo if you find it helpful!**
+**Ammachi ("Grandmother's Class")** is a production-ready, installable **Progressive Web App (PWA)** designed to help NRI (Non-Resident Indian) children learn, retain, and celebrate Indian native languages (**Tamil, Telugu, Hindi, Malayalam, and Kannada**). 
 
-Made with ❤️ by [Abishek0070]
+The platform combines warm, motherly AI mentorship with cutting-edge vision, speech, and agentic workflows across three core modules:
 
-</div>
+1. ✍️ **AI Handwritten Tutor (PaddleOCR PP-OCRv5 + Gemini Vision)**: Write in a real notebook, snap a photo or use live camera capture, and receive instant stroke, curve, and pulli/dot analysis from Ammachi.
+2. 🎤 **AI Voice Agent (Deepgram STT + Patience Denoising Agent + ElevenLabs TTS)**: Practice speaking and conversational fluency with an adaptive, stutter-tolerant grandmother persona that recasts mistakes gently.
+3. 🪔 **Cultural Discovery & Gamification (LangGraph Agent + RAG + Digital Passport)**: Explore Indian festivals (Pongal, Diwali, Ugadi, Onam, Karthigai Deepam), folktales, solve quiz challenges, and collect digital Cultural Stamps.
+
+---
+
+## 🛠️ Upgraded Architecture & Tech Stack
+
+```
+                               ┌────────────────────────────────┐
+                               │  Ammachi React 18 Vite PWA     │
+                               │  (Tailwind CSS + WebApp Shell) │
+                               └───────────────┬────────────────┘
+                                               │ HTTP / REST / JWT
+                                               ▼
+                               ┌────────────────────────────────┐
+                               │        FastAPI Backend         │
+                               └───────┬───────────────┬────────┘
+                                       │               │
+            ┌──────────────────────────┼───────────────┼──────────────────────────┐
+            ▼                          ▼               ▼                          ▼
+ ┌──────────────────────┐   ┌────────────────────┐   ┌────────────────────┐   ┌──────────────────────────┐
+ │    Module 1: Vision  │   │  Module 2: Voice   │   │ Module 3: Culture  │   │  Database & Persistence  │
+ │  PaddleOCR PP-OCRv5  │   │  Deepgram Nova-2   │   │  LangGraph State   │   │  PostgreSQL (Psycopg 3)  │
+ │  Gemini Multimodal   │   │  Patience Agent    │   │  Festival Story RAG│   │  SQLAlchemy 2.0 ORM      │
+ │  Stroke Evaluation   │   │  ElevenLabs TTS    │   │  Gamified Badges   │   │  (SQLite local fallback) │
+ └──────────────────────┘   └────────────────────┘   └────────────────────┘   └──────────────────────────┘
+```
+
+### Technology Highlights
+- **Frontend PWA**: React 18, Vite 5, Tailwind CSS, `vite-plugin-pwa` (Service Worker, Workbox static asset caching, Web App Manifest, Install prompts), Lucide Icons, Canvas Confetti.
+- **Backend API**: FastAPI, Pydantic v2, Python 3.11+, JWT security, CORS middleware.
+- **AI / Agent Layer**: Google Gemini (`gemini-1.5-flash` / `gemini-2.0-flash`), LangChain, LangGraph orchestrator, Groq Cloud fallback.
+- **Vision / OCR**: PaddleOCR (PP-OCRv5 multilingual Indian script support) + OpenCV preprocessing (CLAHE, bilateral filtering).
+- **Speech**: Deepgram STT (`nova-2`), ElevenLabs emotive Grandmother TTS (`eleven_multilingual_v2`), gTTS regional fallback.
+- **Database**: PostgreSQL with SQLAlchemy 2.0 and Psycopg 3 driver (with automatic zero-config SQLite development fallback).
+
+---
+
+## 📁 Repository Structure
+
+```
+AI-Native-Language-Tutor-main/
+│
+├── backend/
+│   ├── api/
+│   │   ├── auth.py              # Authentication (JWT, signup, login, Google OAuth, /me)
+│   │   ├── vision.py            # Module 1: Handwriting analysis & letters API
+│   │   ├── voice.py             # Module 2: STT, Patience Agent, & ElevenLabs TTS
+│   │   ├── culture.py           # Module 3: Cultural discovery & LangGraph chat
+│   │   └── user.py              # User progress, stats, and passport stamps
+│   │
+│   ├── database/
+│   │   ├── connection.py         # SQLAlchemy engine, Psycopg 3, & SQLite fallback
+│   │   ├── models.py             # User, LearningProgress, CulturalStamp, Session
+│   │   └── crud.py               # Data access layer & streak/progress metrics
+│   │
+│   ├── services/
+│   │   ├── paddleocr_service.py  # Multilingual PP-OCRv5 character recognition
+│   │   ├── gemini_service.py     # Gemini Multimodal Vision & LLM completion
+│   │   ├── voice_service.py      # Deepgram STT & ElevenLabs/gTTS streaming
+│   │   └── culture_service.py    # Cultural dataset, festivals RAG & media search
+│   │
+│   ├── agents/
+│   │   ├── patience_agent.py     # Speech denoiser & subtle recasting assistant
+│   │   └── langgraph_culture.py  # LangGraph state workflow for cultural mentoring
+│   │
+│   ├── schemas/                  # Pydantic v2 schemas for all APIs
+│   ├── main.py                  # FastAPI application entry point
+│   └── requirements.txt         # Upgraded Python dependencies
+│
+├── frontend/
+│   ├── public/                  # App icons, favicon, PWA manifest icons
+│   ├── src/
+│   │   ├── components/          # Mascots, Speech bubbles, Navbars, Audio players
+│   │   ├── pages/               # Auth, Dashboard, Writing, Speaking, Culture, Progress, Profile
+│   │   ├── context/             # AuthContext (JWT) & LanguageContext (Tamil/Telugu/Hindi)
+│   │   ├── services/            # Axios API clients
+│   │   ├── App.jsx              # React Router setup
+│   │   ├── main.jsx             # React entry point & PWA service worker registration
+│   │   └── index.css            # Tailwind design system with warm child-friendly theme
+│   ├── package.json
+│   └── vite.config.js           # Vite PWA configuration
+│
+├── .env.example                 # Environment configuration template
+├── .gitignore                   # Production Git ignore rules
+└── README.md
+```
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- **Python 3.10+** (Python 3.11 recommended)
+- **Node.js 18+** & **npm**
+- **Git**
+- *(Optional)* **PostgreSQL** (if omitted, backend runs seamlessly with local SQLite)
+
+---
+
+### 1. Environment Setup
+
+Copy `.env.example` to create your `.env` file in the `backend/` directory:
+
+```bash
+cp .env.example backend/.env
+```
+
+Configure your API keys in `backend/.env`:
+```ini
+# PostgreSQL (Optional - falls back to SQLite if omitted)
+DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/ammachi_db
+
+# Google Gemini AI
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-1.5-flash
+
+# Groq Cloud (Fast fallback)
+GROQ_API_KEY=your_groq_api_key_here
+
+# Deepgram Speech-to-Text
+DEEPGRAM_API_KEY=your_deepgram_api_key_here
+
+# ElevenLabs Voice
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+ELEVENLABS_VOICE_ID=ThT5KcBeYPX3keUQqHPh
+
+# JWT Security
+JWT_SECRET=your_jwt_secret_key_here
+
+# Frontend URL
+FRONTEND_URL=http://localhost:5173
+PORT=8000
+```
+
+---
+
+### 2. Backend Setup & Run
+
+Navigate to `backend/` and install dependencies:
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+Start the FastAPI backend server:
+
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+The API will be live at:
+- **API Root**: `http://localhost:8000`
+- **Interactive OpenAPI Docs (Swagger)**: `http://localhost:8000/docs`
+- **Health Check**: `http://localhost:8000/health`
+
+---
+
+### 3. Frontend Setup & Run
+
+Open a new terminal window, navigate to `frontend/`, and install dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+Open your browser at:
+👉 `http://localhost:5173`
+
+---
+
+## 📱 Testing Progressive Web App (PWA) Features
+
+### 1. Desktop Installation (Chrome / Edge)
+1. Open `http://localhost:5173` in Google Chrome or Microsoft Edge.
+2. Click the **Install App** icon in the address bar (or Menu > "Install Ammachi's Class").
+3. Launch the standalone desktop app window.
+
+### 2. Mobile Installation (iOS / Android)
+- **Android (Chrome)**: Tap the 3-dots menu > **"Add to Home screen"** / **"Install app"**.
+- **iOS (Safari)**: Tap the Share button > **"Add to Home Screen"**.
+
+### 3. Offline Shell Test
+1. In Chrome DevTools, open the **Application** tab.
+2. Check **Service Workers** to verify `sw.js` is active.
+3. Check the **Offline** checkbox in DevTools Network tab.
+4. Refresh the page: the application shell, fonts, cached lessons, and navigation continue to function offline with an amber offline status banner!
+
+---
+
+## 🧪 Testing the 3 Core Modules
+
+### ✍️ Module 1: AI Handwritten Tutor
+1. Navigate to `/writing`.
+2. Choose your language (Tamil / Telugu) and select a character (e.g. `அ` or `అ`).
+3. Write the character in your physical notebook.
+4. Click **"Open Camera"** to take a snapshot, or click **"Upload File"** to pick a picture.
+5. Click **"Analyze with Ammachi"**:
+   - PaddleOCR extracts the text.
+   - Google Gemini evaluates your stroke shape and pulli/dots.
+   - Ammachi speaks her motherly feedback aloud with audio!
+
+### 🎤 Module 2: AI Voice Agent
+1. Navigate to `/speaking`.
+2. Tap **"Tap to Speak 🎙️"** and grant microphone permission when prompted.
+3. Say words or sentences (e.g., *"Vazhaipazham"* or *"Vanakkam Ammachi"*).
+4. Tap **"Stop Recording"**:
+   - Deepgram transcribes your speech.
+   - The Patience Agent denoises any pauses or repetitions.
+   - Ammachi replies in a warm voice (ElevenLabs / gTTS) and awards fluency points.
+
+### 🪔 Module 3: Cultural Discovery & Gamification
+1. Navigate to `/culture`.
+2. Select any festival (e.g., **Pongal**, **Diwali**, **Ugadi**, or **Onam**).
+3. The LangGraph agent retrieves cultural folklore, shows colorful celebration snapshots, and asks a quiz challenge.
+4. Type your answer to earn points and unlock digital stamps in your **Cultural Passport** with celebratory confetti animations!
+
+---
+
+## 🔒 Security & Best Practices
+- **No Hardcoded Secrets**: All API keys, database credentials, and JWT secrets are managed via environment variables.
+- **Secure Password Hashing**: Passwords are hashed using salted cryptographic hashing (PBKDF2-SHA256).
+- **Protected Endpoints**: JWT validation middleware ensures user privacy and progress integrity.
+- **Strict CORS**: Origins are strictly controlled via `FRONTEND_URL` / `CORS_ORIGINS`.

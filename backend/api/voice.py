@@ -1,173 +1,147 @@
-from fastapi import APIRouter, UploadFile, File, Form
-from models import VoiceResponse
 import os
 import tempfile
-from langchain_groq import ChatGroq
+import logging
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
+
+from database.connection import get_db
+from database import crud
+from api.auth import get_current_user
+from schemas.voice import (
+    VoiceTranslateRequest,
+    VoiceTranslateResponse,
+    VoiceAnalyzeResponse,
+    TextToSpeechRequest
+)
+from services.voice_service import (
+    translate_english_to_native,
+    transcribe_audio_detailed,
+    determine_recognition_status,
+    generate_tutor_feedback,
+    generate_tts_stream
+)
+
+logger = logging.getLogger("ammachi.voice_api")
 
 router = APIRouter()
 
-@router.post("/analyze", response_model=VoiceResponse)
-def analyze_voice(file: UploadFile = File(...)):
-    print(f"Received audio upload: {file.filename}")
-    
-    # 1. Save Audio Temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-        tmp.write(file.file.read()) # No await in def
+@router.post("/translate", response_model=VoiceTranslateResponse)
+def translate_text(request: VoiceTranslateRequest):
+    """
+    Translates an English sentence into the selected native language (Tamil, Telugu, Hindi)
+    and returns a child-friendly English phonetic pronunciation guide.
+    """
+    if not request.english_text or not request.english_text.strip():
+        raise HTTPException(status_code=400, detail="English text cannot be empty.")
+
+    res = translate_english_to_native(request.english_text, request.language or "Tamil")
+    return VoiceTranslateResponse(**res)
+
+@router.post("/analyze", response_model=VoiceAnalyzeResponse)
+def analyze_voice(
+    file: UploadFile = File(...),
+    expected_text: str = Form(""),
+    pronunciation_guide: str = Form(""),
+    original_english: str = Form(""),
+    language: str = Form("Tamil"),
+    current_user = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    """
+    Analyzes the child's recorded native speech against the expected translated text:
+    1. Transcribes audio via Deepgram STT (nova-3/general) / Groq Whisper
+    2. Multi-script matcher classifies state: CORRECT (90-100), NEEDS_PRACTICE, or UNCERTAIN
+    3. Prompts Gemini to generate warm, child-friendly feedback matching the status
+    4. Logs learning progress and awards points in database
+    """
+    suffix = ".wav" if not file.filename or not file.filename.endswith(".webm") else ".webm"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(file.file.read())
         audio_path = tmp.name
-        
+
     try:
-        from groq import Groq
-        client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        # 1. Detailed STT Transcription
+        detected_text, confidence, words_data = transcribe_audio_detailed(audio_path, language=language)
 
-        # 2. Transcribe with Groq Whisper (Literal Transcription)
-        print("Transcribing with Whisper...")
-        with open(audio_path, "rb") as f:
-            transcription = client.audio.transcriptions.create(
-                file=(audio_path, f.read()),
-                model="whisper-large-v3",
-                response_format="text",
-                language="ta" # Tamil audio expected? Or mixed. Let's try auto or set to 'ta' if we know it's Tamil context. 
-                # User said "Native Language Tutor", safe to assume Tamil primarily but children migh speak Tanglish.
-                # "whisper-large-v3" is good at auto-detect. Let's not force 'ta' to allow Tanglish.
-            )
-        raw_text = str(transcription).strip()
-        print(f"Raw Transcription: {raw_text}")
+        # 2. Multi-script & Phonetic Transliteration State Classification
+        status, score, mistake_explanation, needs_retry = determine_recognition_status(
+            expected_native=expected_text,
+            pronunciation_guide=pronunciation_guide,
+            original_english=original_english,
+            detected_text=detected_text,
+            confidence=confidence
+        )
 
-        # 3. Patience Agent (Denoise Stutters)
-        # Using a fast model for text processing
-        chat = ChatGroq(model_name="llama-3.3-70b-versatile", api_key=os.environ.get("GROQ_API_KEY"))
-        
-        patience_prompt = f"""You are an expert Speech-to-Text polisher for children. 
-Task: Clean the text to find the child's intended meaning.
-Input: "{raw_text}"
+        # 3. Gemini Feedback Generation matching backend status
+        feedback = generate_tutor_feedback(
+            status=status,
+            expected_text=expected_text,
+            detected_text=detected_text,
+            mistake_explanation=mistake_explanation,
+            language=language
+        )
 
-Rules:
-- Remove repeated words (stutters) like "A... A... Amma".
-- Remove filler words (um, uh).
-- Fix minor phonetic misinterpretations if obvious in context of a child speaking Tamil/English.
-- OUTPUT ONLY THE CLEANED TEXT. No explanation."""
+        # 4. Award Points & Log in DB
+        points_to_award = 10 if status == "CORRECT" else (5 if status == "NEEDS_PRACTICE" else 0)
+        crud.log_learning_progress(
+            db=db,
+            user_id=current_user.id,
+            module="voice",
+            activity=f"Pronounced ({status}): '{expected_text[:25]}'",
+            score=score,
+            language=language
+        )
+        updated = crud.update_user_points_and_stamp(db, current_user.username, points_to_add=points_to_award)
 
-        msg = chat.invoke(patience_prompt)
-        cleaned_text = msg.content.strip()
-        print(f"Cleaned Text: {cleaned_text}")
-
-        # 4. Ammachi's Conversational Reply
-        conversation_prompt = f"""You are Ammachi, a warm and loving Tamil grandmother. 
-The child said to you: "{cleaned_text}"
-(Raw recording had: "{raw_text}")
-
-Your Goal: Have a frindly enthusiastic conversation with the child and guide them to learn Tamil. 
-- **Reply relevantly** to what they said in a mix of Tamil and English (Tanglish).
-- **Subtle Correction**: If they made a grammar mistake, repeat their sentence back to them CORRECTLY as part of your reply (recasting).
-- **Encourage**: Use terms like "Kanna", "Chellam", "Sabash".
-- **Keep it short**: One or two sentences max.
-- **CRITICAL**: DO NOT use any jourgons and difficult words and special characters like asterisks (**), dashes, or extra colon marks. Use only simple Tamil and English words with basic punctuation (full stops and commas).
-- **Do NOT** specifically say "Your pronunciation was good". Just talk to them!
-"""
-        feedback_msg = chat.invoke(conversation_prompt)
-
-        return VoiceResponse(
-            transcription=cleaned_text,
-            feedback=feedback_msg.content  # The 'feedback' field now acts as the conversational reply
+        return VoiceAnalyzeResponse(
+            expected_text=expected_text,
+            detected_text=detected_text,
+            recognition_status=status,
+            score=score,
+            confidence=round(confidence, 2),
+            feedback=feedback,
+            mistake_explanation=mistake_explanation,
+            needs_retry=needs_retry,
+            points_awarded=points_to_award,
+            total_points=updated.get("points", current_user.points or 0),
+            transcription=detected_text,
+            cleaned_text=detected_text,
+            is_correct=(status == "CORRECT")
         )
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return VoiceResponse(
-            transcription="Error processing audio",
-            feedback=f"Aiyayo! My ears are not working properly. (Error: {str(e)})"
+        logger.error("Voice analysis endpoint error: %s", e)
+        return VoiceAnalyzeResponse(
+            expected_text=expected_text,
+            detected_text="Audio received",
+            recognition_status="UNCERTAIN",
+            score=30,
+            confidence=0.0,
+            feedback=f"Aiyayo Kanna! My ears are having trouble hearing right now. Please press the mic and try again in a quiet room!",
+            mistake_explanation="Audio connection check required.",
+            needs_retry=True,
+            points_awarded=0,
+            total_points=current_user.points or 0,
+            transcription="Audio received",
+            cleaned_text="Audio received",
+            is_correct=False
         )
     finally:
         if os.path.exists(audio_path):
-            os.remove(audio_path)
-
-def clean_text_for_speech(text: str) -> str:
-    """
-    Removes markdown symbols and other characters that TTS engines shouldn't speak literally.
-    """
-    import re
-    # Remove markdown bold/italic
-    text = re.sub(r'[\*_]{1,3}', '', text)
-    # Remove extra colons if they appear as part of a list or header (like "Correction: ...")
-    # But keep them if they are part of a sentence? Actually TTS shouldn't say "colon".
-    # ElevenLabs usually handles them, but let's be safe.
-    text = text.replace(':', '.') 
-    # Remove other common symbols
-    text = text.replace('#', '')
-    text = text.replace('-', ' ')
-    # Ensure commas are just commas (TTS should pause, not say "comma")
-    # If the user says it says "coma", it might be some weird unicode comma?
-    
-    return text.strip()
+            try:
+                os.remove(audio_path)
+            except Exception:
+                pass
 
 @router.post("/speak")
-def text_to_speech(text: str = Form(...)):
+def speak_text(request: TextToSpeechRequest):
     """
-    Generates audio for the given text.
-    Prioritizes gTTS for Tamil text (better native support), Eleven Labs for English/Tanglish.
+    Streams audio synthesizing native text using ElevenLabs TTS (eleven_multilingual_v2).
     """
-    try:
-        from fastapi.responses import StreamingResponse
-        import io
-        
-        # Clean the text before sending to any TTS
-        text = clean_text_for_speech(text)
-        print(f"Cleaned Text for TTS: {text}")
+    return generate_tts_stream(request.text, language=request.language or "Tamil")
 
-        # Check if text contains Tamil characters
-        def is_tamil(t):
-            return any('\u0B80' <= c <= '\u0BFF' for c in t)
-
-        if is_tamil(text):
-            print(f"Tamil detected. Switching to gTTS.")
-            from gtts import gTTS
-            
-            # Generate gTTS audio in memory
-            tts = gTTS(text=text, lang='ta', slow=False)
-            fp = io.BytesIO()
-            tts.write_to_fp(fp)
-            fp.seek(0)
-            
-            return StreamingResponse(fp, media_type="audio/mpeg")
-
-        # Else try Eleven Labs for Tanglish/English
-        try:
-            from elevenlabs.client import ElevenLabs
-            
-            api_key = os.environ.get("ELEVEN_LABS_API") or os.environ.get("ELEVENLABS_API_KEY")
-            if not api_key:
-                 raise ValueError("ELEVEN_LABS_API key missing.")
-            
-            client = ElevenLabs(api_key=api_key)
-            # Default to "Dorothy" (ThT5KcBeYPX3keUQqHPh) - deeply older Indian female, serves as good "Grandma" fallback
-            voice_id = os.environ.get("ELEVENLABS_VOICE_ID", "ThT5KcBeYPX3keUQqHPh") 
-            
-            print(f"Generating Eleven Labs TTS for: {text[:50]}...")
-            audio_stream = client.generate(
-                text=text,
-                voice=voice_id,
-                model="eleven_multilingual_v2"
-            )
-            
-            def iterfile():
-                for chunk in audio_stream:
-                    yield chunk
-                    
-            return StreamingResponse(iterfile(), media_type="audio/mpeg")
-
-        except Exception as e_eleven:
-            print(f"Eleven Labs Failed: {e_eleven}. Falling back to gTTS (English/Auto).")
-            # Fallback to gTTS if Eleven Labs fails
-            from gtts import gTTS
-            tts = gTTS(text=text, lang='en', slow=False) # Default to En for fallback
-            fp = io.BytesIO()
-            tts.write_to_fp(fp)
-            fp.seek(0)
-            return StreamingResponse(fp, media_type="audio/mpeg")
-
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        print(f"TTS Critical Error: {e}")
-        return {"error": str(e)}
+@router.get("/speak-get")
+def speak_text_get(text: str, language: str = "Tamil"):
+    """
+    HTTP GET endpoint for playing native audio in browser <audio> tags or AudioContext.
+    """
+    return generate_tts_stream(text, language=language)
